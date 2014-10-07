@@ -1,0 +1,28 @@
+%h2 東京メトロ#{@stations['title']}線 #{@stations['current_title']}駅 列車接近情報
+- data = @locations.find {|location| location.present?}
+- datetime =DateTime.parse(data.first['dc:date'])
+%p #{datetime.strftime('%Y/%m/%d %H:%M:%S')} 現在
+- prev_station = ''
+- @stations['stations'].each_with_index do |station, index|
+  %p
+    - if @stations['current_index'] == station['odpt:index']
+      %b 【最寄り】#{station['title']}駅
+    - else
+      #{station['title']}駅
+    - @locations[index].each do |location|
+      - if location['odpt:fromStation'] && !location['odpt:toStation']
+        %br
+        &nbsp;&nbsp;停車中 [#{get_train_type_name(location['odpt:trainType'])}]#{get_rail_direction_name(location['odpt:railDirection'])}方面行き
+  %p
+    %span.arrow
+      ↓
+      - @locations[index].each do |location|
+        - if location['odpt:fromStation'] && location['odpt:toStation'] && location['odpt:toStation'] != prev_station
+          走行中 [#{get_train_type_name(location['odpt:trainType'])}]
+    %span.arrow
+      ↑
+      - if @locations[index + 1]
+        - @locations[index + 1].each do |location|
+          - if location['odpt:fromStation'] && location['odpt:toStation'] && location['odpt:toStation'] == station['odpt:station']
+            走行中 [#{get_train_type_name(location['odpt:trainType'])}]
+    - prev_station = station['odpt:station']

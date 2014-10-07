@@ -1,0 +1,8 @@
+- if flash.notice
+  %h3= flash.notice
+.loading
+  %p 最寄りの駅を半径1km内で検索中...
+.result
+  %h2 接近情報の検索
+  = form_tag approach_path, :id => 'approach-form' do
+    = submit_tag '検索'
